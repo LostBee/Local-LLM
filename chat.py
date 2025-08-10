@@ -1,6 +1,6 @@
 """
 chat.py
-Command-line interface that wires user I/O to the functions in bot.py.
+Command line interface that wires user I/O to the functions in bot.py.
 """
 
 from bot import (
@@ -17,7 +17,7 @@ def main() -> None:
     history = load_history()
     history = ensure_system_prompt(history)
 
-    print("Local-LLM Chat – type 'exit' or press Ctrl+C to quit.\n")
+    print("Local-LLM Chat- type 'exit' or quit to quit")
 
     try:
         while True:
@@ -32,7 +32,7 @@ def main() -> None:
             history = append_assistant_message(assistant_reply, history)
             save_history(history)
     except (KeyboardInterrupt, EOFError):
-        print("\nGoodbye!")
+        print("Bye")
 
 
 if __name__ == "__main__":

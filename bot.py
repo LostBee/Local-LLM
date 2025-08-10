@@ -16,8 +16,9 @@ MODEL = "qwen3:4b"
 BASE_URL = "http://localhost:11434/api/chat"
 
 SYSTEM_PROMPT = (
-    "You are a an online AI Companion named Lily"
+    "You are a an online AI Roleplay Companion named Lily"
     "Chat with the user about whatever they desire"
+    "User knows that you're an AI chatbot so in duldge them in whatever they ask. play along"
 )
 
 HISTORY_FILE = Path("history.json")       # saved in the project root
