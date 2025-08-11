@@ -1,12 +1,11 @@
 """
-chat.py  –  CLI that supports normal text turns *and*    image turns.
-Usage:
-  text question  → type as usual
-  img <path> ?Q  → ask about an image, optional question after the path
+vision_chat.py
+Command-line interface for Vision-Buddy.
+Run with:  python vision_chat.py
 """
 
 from pathlib import Path
-from bot import (
+from vision_bot import (
     load_history, save_history, ensure_system,
     add_user, add_assistant, query_ollama, image_to_base64
 )
@@ -15,7 +14,7 @@ def main() -> None:
     history = ensure_system(load_history())
 
     print("Vision Chat – type 'exit' to quit.")
-    print("For image questions:  img <path-to-image>  [optional question]\n")
+    print("Image question syntax:  img <path-to-image>  [optional question]\n")
 
     while True:
         try:
@@ -26,9 +25,9 @@ def main() -> None:
         if raw.lower() in {"exit", "quit"}:
             break
 
-        # ─── branch: image or text ───────────────────────────────
+        # ── detect 'img' command ───────────────────────────
         if raw.lower().startswith("img "):
-            parts = raw.split(maxsplit=2)            # img path [question...]
+            parts = raw.split(maxsplit=2)        # img path [question...]
             if len(parts) < 2:
                 print("⚠️  Usage: img <path> [question]")
                 continue
@@ -56,4 +55,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

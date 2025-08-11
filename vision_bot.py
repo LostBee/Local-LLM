@@ -1,5 +1,6 @@
 """
-bot.py  –  vision-enabled utilities for Ollama chat
+vision_bot.py
+Pure utilities and configuration for a multimodal (vision+text) Ollama chatbot.
 """
 
 from __future__ import annotations
@@ -10,14 +11,16 @@ import requests
 from PIL import Image
 
 # ───────── configuration ─────────
-MODEL = "llava:13b"                     # ← change to any multimodal model you pulled
+MODEL = "gemma3:4b"                      # change to any multimodal model you pulled
 BASE_URL = "http://localhost:11434/api/chat"
+
 SYSTEM_PROMPT = (
     "You are Vision-Buddy, a concise and friendly assistant. "
     "When an image is provided, describe it and answer the user’s question."
 )
+
 HISTORY_FILE = Path("history.json")
-History = List[Dict[str, str]]          # (images are injected only for the API call)
+History = List[Dict[str, str]]           # type alias
 
 # ───────── persistence ────────────
 def load_history() -> History:
@@ -30,11 +33,9 @@ def save_history(history: History) -> None:
 
 # ───────── helper: encode image ────
 def image_to_base64(path: Path) -> str:
-    """Load an image file and return base-64 string suitable for Ollama."""
-    with Image.open(path) as img:
-        img = img.convert("RGB")        # ensure consistent encoding
-        buf = Path(path).read_bytes()
-    return base64.b64encode(buf).decode("utf-8")
+    """Return base-64 string of the image, suitable for Ollama."""
+    data = path.read_bytes()             # Pillow not strictly needed, but keeps option to preprocess
+    return base64.b64encode(data).decode("utf-8")
 
 # ───────── conversation helpers ───
 def ensure_system(history: History) -> History:
@@ -53,11 +54,10 @@ def add_assistant(reply: str, history: History) -> History:
 # ───────── model call ──────────────
 def query_ollama(history: History, img_b64: Optional[str] = None) -> str:
     """
-    Send history (+ optional base64 image) to Ollama and return the assistant reply.
+    Send history (+ optional image) to Ollama and return assistant reply.
     """
-    # If it's an image turn, tack the image list onto the *last* user message
     if img_b64:
-        history[-1]["images"] = [img_b64]
+        history[-1]["images"] = [img_b64]   # attach image to the most-recent user turn
 
     payload = {
         "model": MODEL,
